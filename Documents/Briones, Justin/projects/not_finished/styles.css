@@ -1,0 +1,207 @@
+body  {
+    font-family: 'Baskervville', serif;
+    color: linen;
+    background-color: rgb(0, 0, 0);
+}
+main .content2 {
+    display: flex;
+    justify-content: center;
+}
+header {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    justify-content: center;
+    height: 200px;
+}
+.navbar {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+}
+.logo {
+    font-family: "Josefin Sans", sans-serif;
+}
+.image {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+.page-start {
+    position: relative;
+    top: 0;
+    width: 100%;
+    height: auto;
+}
+.image img {
+    width: 100%;
+}
+.page-start h2, .page-start h3 {
+    text-align: center;
+    font-family: "Josefin Sans", sans-serif;
+    color: rgba(155,1,2,255)
+}
+.links {
+    background-color: rgba(27,27,27, 1);
+    position: absolute;
+    right: 7.5%;
+    bottom: 15%;
+    padding: 10px;
+    border-radius: 20px;
+}
+.link-content {
+    display: flex;
+    justify-content: center;
+}
+.top {
+    display: flex;
+    justify-content: center;
+}
+.official-logo {
+    border-radius: 30px;
+    margin-bottom: 7px;
+}
+.official {
+    background-color: rgba(0, 0, 0, .5);
+    width: max-content;
+    margin: 5px 5px;
+    padding: 10px;
+    border-radius: 15px;
+}
+.bottom {
+    display: flex;
+    justify-content: center;
+}
+.content {
+    margin-right: 25%;
+    margin-left: 25%;
+}
+.content2 {
+    background-color: white;
+    width: 100%;
+    height: fit-content;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.about {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+    gap: 10px;
+    width: 50%;
+    margin-right: 25px;
+}
+.info {
+    padding: 5px;
+    background-color: darkblue;
+}
+.card {
+    background-image: linear-gradient(to bottom, rgba(139, 0, 0, 1), rgba(0, 0, 0, .4));
+    background-color: rgb(105, 105, 105);
+}
+.card-title {
+    font-family: "Josefin Sans", sans-serif;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    border-radius: 20px;
+    padding-bottom: 2.5px;
+    margin-top: 5px;
+}
+a {
+    text-decoration: none;
+    color: linen;
+}
+.card-text {
+    font-family: "Josefin Sans", sans-serif;
+    text-align: center;
+    font-size: 1.25em;
+    border-radius: 20px;
+    padding-bottom: 5px;
+    padding-top: 10px;
+}
+.content2 img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.about2 {
+    width: 20%;
+}
+.box {
+    text-align: center;
+    background-color: blue;
+    padding: 5px;
+    width: 100%;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+.content3 {
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 15px;
+    margin: 0 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.seperate {
+    border-radius: 10px;
+    opacity: 100%;
+}
+.social-icons {
+    font-size: 2rem;
+    padding-right: 10px;
+    padding-left: 10px;
+    background-color: gray;
+    align-items: center;
+    border-radius: 10px;
+}
+.icon {
+    padding-top: 3px ;
+    padding-right: 5px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    background-color: black;
+    border-radius: 10px;
+}
+.container-fluid {
+    margin-left: 15px
+}
+.navbar-brand {
+    font-family: "Josefin Sans", sans-serif;
+}
+.download-links {
+    display: flex;
+    justify-content: space-evenly;
+}
+.game-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    width: 100px;
+    height: 60px;
+    border-radius: 50px;
+}
+.body {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+footer {
+    width: 100%;
+    height: 200px;
+    position:absolute;
+    bottom: 0
+}
+hr {
+    height: 20px;
+}

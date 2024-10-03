@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tailwind Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <main>
+      <nav
+        class="flex flex-row items-center bg-yellow-400 h-20 px-10 fixed top-0"
+      >
+        <a class="text-[30px] font-bold italic" href="index.html">Logo</a>
+        <div class="flex justify-end w-[90vw] gap-10">
+          <a
+            class="text-neutral-700 hover:text-blue-700 hover:underline"
+            href="#"
+            >Home</a
+          >
+          <a
+            class="text-neutral-700 hover:text-blue-700 hover:underline"
+            href="#"
+            >Services</a
+          >
+          <a
+            class="text-neutral-700 hover:text-blue-700 hover:underline"
+            href="#"
+            >About</a
+          >
+          <a
+            class="text-neutral-700 hover:text-blue-700 hover:underline"
+            href="#"
+            >Contact</a
+          >
+        </div>
+      </nav>
+      <section class="flex flex-col items-center justify-center my-40">
+        <h1 class="text-2xl md:text-6xl">Hello, World!</h1>
+        <div class="h-[2px] w-56 bg-blue-800 my-5"></div>
+        <p class="italic font-medium">
+          The most commonly used message in programming!
+        </p>
+      </section>
+      <section class="text-center">
+        <h1 class="hidden lg:block">I am big</h1>
+        <h1 class="block lg:hidden">I am small</h1>
+      </section>
+      <section class="my-20 flex items-center justify-center">
+        <div class="h-40 w-40 bg-[#1b1b1b] rounded-full"></div>
+      </section>
+      <section class="text-center">
+        <h1 class="hidden lg:block">I am big</h1>
+        <h1 class="block lg:hidden">I am small</h1>
+      </section>
+      <section class="my-20 flex items-center justify-center">
+        <div class="h-40 w-40 bg-[#1b1b1b] rounded-full"></div>
+      </section>
+      <section class="text-center">
+        <h1 class="hidden lg:block">I am big</h1>
+        <h1 class="block lg:hidden">I am small</h1>
+      </section>
+      <section class="my-20 flex items-center justify-center">
+        <div
+          class="h-40 w-40 outline bg-green-500 md:bg-red-500 lg:bg-yellow-500"
+        ></div>
+      </section>
+      <section
+        class="gap-10 flex flex-col md:flex-row items-center justify-center my-20"
+      >
+        <div class="w-20 h-20 bg-red-500 hover:bg-orange-400"></div>
+        <div class="w-20 h-20 bg-yellow-500"></div>
+        <div class="w-20 h-20 bg-green-500"></div>
+        <div class="w-20 h-20 bg-blue-500"></div>
+      </section>
+    </main>
+  </body>
+</html>

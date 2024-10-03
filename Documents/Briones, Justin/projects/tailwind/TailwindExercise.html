@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tailwind script-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Tailwind Exercise</title>
+  </head>
+
+  <body>
+    <main class="m-10">
+      <!-- Put your full name here and center it -->
+      <h1 class="text-4xl font-bold">Justin Briones</h1>
+      <p class="mt-20">Breakpoints</p>
+      <ul>
+        <li>No breakpoint for small screen, since mobile first approach</li>
+        <li>md:</li>
+        <li>lg:</li>
+        <li>xl:</li>
+      </ul>
+      <!-- Exercise Divider -->
+      <section class="mt-20">
+        <h1 class="text-4xl">Tailwind Exercise 1</h1>
+        <hr />
+        <h3 class="text-blue-500 font-medium">Make me blue and medium</h3>
+        <h3 class="font-bold hover:text-yellow-500">Make me bold, and make me yellow on hover</h3>
+        <br />
+        <button class="bg-red-500">Red Button</button>
+        <button class="bg-yellow-500 hover:bg-orange-500">Yellow Button, Orange on Hover</button>
+        <button class="bg-green-500">Green Button</button>
+        <a href="#" class="outline outline-sky-500">Light Blue Outline Button</a>
+        <br />
+        <p class="bg-black text-white text-center">Dark background white text AND center aligned</p>
+      </section>
+      <!-- Exercise Divider -->
+      <section class="mt-20">
+        <h1 class="text-4xl">Tailwind Exercise 2</h1>
+        <hr />
+        <h1 class="p-5 m-5 border border-green-500">Padding and margin 5 and give me a green border</h1>
+        <h1 class="p-5 m-5 rounded-lg border border-yellow-300">Padding and margin 5 and give me a rounded large yellow border</h1>
+        <h1 class="p-5 m-5 border border-red-500">Padding and margin 5 and give me a red border</h1>
+        <div class="shadow p-3 my-5">
+          Shadow with padding(3) all around and margin(5) on top and bottom
+        </div>
+
+        <!-- Make a green button with white text that has padding(5) at SM, has padding(20) at MD-->
+        <!-- Then center the green button using flex box -->
+        <div>
+          <button class="bg-green-500 text-white flex justify-center p-5 md:p-20">I GROW</button>
+        </div>
+        <h2 class="flex justify-center invisible md:visible ">Center me, and make me hide at XS and SM</h2>
+      </section>
+      <!-- Exercise Divider -->
+      <section class="mt-20">
+        <h1 class="text-4xl">Tailwind Exercise 3</h1>
+        <hr />
+        <!-- Red square on small screen, blue square on medium to xl screens -->
+        <div class="w-40 h-40 mx-auto border-2 border-black bg-red-500 md:bg-blue-500 xl:bg-blue-500"></div>
+        <!-- Make the divs row on medium and bigger screens, and column in sm to xs screens -->
+        <!-- Give the divs a gap of 10 and make them a circle-->
+        <div class="gap-10 flex items-center justify-center mt-10 flex-col xs:flex-col md:flex-row lg:flex-row">
+          <div class="rounded-full w-[150px] h-[150px] bg-violet-500"></div>
+          <div class="rounded-full w-[150px] h-[150px] bg-orange-500"></div>
+          <div class="rounded-full w-[150px] h-[150px] bg-yellow-500"></div>
+          <div class="rounded-full w-[150px] h-[150px] bg-green-500"></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
