@@ -1,0 +1,417 @@
+.game2 {
+    background-image: url(images/background.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.bulletsReveal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    backdrop-filter: blur(0px);
+    background-color: rgba(0, 0, 0, 0.0);
+    transition: backdrop-filter 1s, background-color 1s;
+  }
+
+.table {
+    position: absolute;
+    top: -7%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65rem;
+    height: auto;
+    z-index: 1;
+}
+
+    .tableTextBox {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.0); /* Equivalent to bg-black/[0.6] */
+        width: 100%;
+        height: 10rem; /* Equivalent to h-[10rem] */
+        z-index: 1;
+        bottom: 0;
+        transition: background-color 1s;
+        display: none;
+    }
+        .tableText {
+            width: 0;
+            text-align: center;
+            overflow: hidden;
+            transition: width 1s;
+        }
+    .tableTextBox2 {
+        position: absolute;
+        display: none;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.6);
+        width: 100%;
+        height: 10rem;
+        z-index: 1;
+        top: 50%;
+        transform: translateY(-50%);
+    }        
+        .tableText2 {
+            width: 100%;
+
+            text-align: center;
+            color: white;
+            white-space: normal;
+            font-weight: 500;
+            font-size: 2.25rem;
+            letter-spacing: 0.05em;
+        }
+
+.characterBox {
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    transform: translate(-50%, -100%);
+    z-index: 0;
+}
+.character {
+    transition: transform 500ms ease-in-out;
+}
+
+.gunPointEnemyBox {
+    position: absolute;
+    z-index: 2;
+    top: 100%;
+    left: 60%;
+    transform: translate(-50%, 0%);
+    width: 45rem;
+    height: auto;
+    z-index: 3;
+    transition: top 2s, transform 2s;
+}
+
+.gunPointYouBox {
+    position: absolute;
+    top: 0%;
+    left: 34%;
+    transform: translate(-50%, 0%);
+    width: 13rem;
+    height: auto;
+    z-index: 0;
+    transition: top 2s, transform 2s;
+}
+
+.gunPointItselfEnemyBox {
+    position: absolute;
+    top: 0%;
+    left: 27%;
+    transform: translate(-50%, 0%);
+    width: 14rem;
+    height: auto;
+    z-index: 0;
+    transition: top 2s, transform 2s;
+}
+
+.gunPointItselfYouBox {
+    position: absolute;
+    z-index: 2;
+    top: 100%;
+    left: 55%;
+    transform: translate(-50%, 0%);
+    width: 40rem;
+    height: auto;
+    z-index: 10;
+    transition: top 2s, transform 2s;
+}
+
+.blurBox {
+    opacity: 0;
+    position: absolute;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    transition: opacity 2s;
+}
+
+.gunPointItselfYouBox img {
+    transform: rotate(180deg);
+}
+
+.game {
+    background-image: url(images/wood.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    perspective: 100px;
+}
+
+.tableBullet {
+    display: none;
+    position: absolute;
+    width: 3rem;
+    height: 1rem;
+    transition: left 0.75s, top 0.75s, transform 0.75s, opacity 1s;
+}
+
+.rack {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20rem;
+    height: auto;
+    transform: translate(-50%, -50%);
+}
+    /*  
+    position: absolute;
+    top: -5%;
+    left: 0%;
+    width: 20rem;
+    height: auto;
+
+    position: absolute;
+    top: 105%;
+    left: 100%;
+    width: 20rem;
+    height: auto;
+    transform: translate(-100%, -100%);
+    */
+
+.gunFire {
+    position: absolute;
+    left: 27%;
+    top: 43%;
+    transform: translate(-50%, -50%);
+    width: 22rem;
+    height: auto;
+    display: none;
+    z-index: 1;
+}
+
+.gun {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18rem;
+    height: auto;
+}
+
+.gun img {
+    transform: rotate(-12deg);
+    transition: left 1s, top 1s, transform 200ms;
+}
+
+.held {
+    display: none;
+    width: 24rem !important;
+    transition: left 1s, top 1s, transform 1s;
+}
+
+.handGame {
+    position: absolute;
+    width: 20rem;
+    height: auto;
+}
+
+.you {
+    top: 100%;
+    left: 100%;
+    transform: translate(-100%, -100%);
+    transition: top 1s, left 1s, transform 1s;
+}
+
+.opponent {
+    top: 0%;
+    left: 0%;
+    transform: translate(0%, 0%);
+    transition: top 1s, left 1s, transform 1s;
+}
+
+.master {
+    top: 50%;
+    left: 0%;
+    transform: translate(-100%, -50%);
+    transition: left 1s, transform 1s;
+}
+
+.magInsert {
+    display: none;
+    width: 20rem !important;
+    left: 0 !important;
+    transform: translate(0, -25%) !important;
+}
+
+.magInsert img {
+    transform: scaleX(-1);
+}
+
+.magInserted {
+    display: none;
+    width: 22rem !important;
+    left: 0 !important;
+    transform: translate(0, -25%) !important;
+}
+
+.magInserted img {
+    transform: scaleX(-1)
+}
+
+.magRack {
+    display: none;
+    width: 22rem !important;
+    left: 0 !important;
+    transform: translate(0, -50%) !important;
+}
+
+.magRack img {
+    transform: scaleX(-1)
+}
+
+.magReady {
+    display: none;
+    width: 22rem !important;
+    left: 0 !important;
+    transform: translate(0, -50%) !important;
+}
+
+.magReady img {
+    transform: scaleX(-1)
+}
+
+.blackspace {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 32rem;
+    background-color: black;
+    z-index: 0;
+    background-image: url(images/wood.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.bulletTable {
+    position: relative;
+    width: 100%;
+    height: 32rem;
+    left: 0;
+    transition: left 1000ms;
+    perspective: 100px;
+    z-index: 22;
+}
+
+    .bulletRevealTextContainer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 7rem;
+        background-color: rgba(0, 0, 0, 0);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.25s;
+    }
+        .bulletRevealText {
+            width: 0;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: 500;
+            font-size: 2.25rem;
+            letter-spacing: 0.05em;
+            transition: width 1s;
+        }
+
+
+
+.bullet {
+    transition: left 750ms ease-out, rotate 750ms ease-out, top 750ms ease-out; 
+    position: absolute;
+    width: 6rem;
+    height: 48px;
+    transform: translateY(-50%);
+    left: 100%;
+}
+
+    .blank {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .blank .head {
+        width: 30%;
+        height: 100%;
+    }
+    
+    .blank .casing {
+        width: 60%;
+        height: 100%;
+        background-color: #98743f;
+    }
+    
+    .blank .casingBottom {
+        width: 6%;
+        height: 90%;
+        margin: auto;
+        background-color: #98743f;
+    }
+    
+    .blank .casingPrimer {
+        width: 4%;
+        height: 100%;
+        background-color: #98743f;
+    }
+    
+    .live {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .live .head {
+        width: 30%;
+        height: 100%;
+        background-color: #674822;
+        border-top-left-radius: 9999px;
+        border-bottom-left-radius: 9999px;
+    }
+    
+    .live .casing {
+        width: 60%;
+        height: 100%;
+        background-color: #98743f;
+    }
+    
+    .live .casingBottom {
+        width: 6%;
+        height: 90%;
+        margin: auto;
+        background-color: #98743f;
+    }
+    
+    .live .casingPrimer {
+        width: 4%;
+        height: 100%;
+        background-color: #98743f;
+    }
+
+.handReveal {
+    position: absolute;
+    top: 50%;
+    left: -35%;
+    transform: translate(-50%, -50%) scale(120%) translateZ(5px);
+    width: 25rem;
+    height: auto;
+    transition: left 1s, transform 500ms;
+}
