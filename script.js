@@ -446,7 +446,7 @@ addEventListener("DOMContentLoaded", (event) => {
             await delay(1000);
             healthBoard.style.transform = 'translateX(100%)';
         } else {
-            magazine = [0];
+            magazine = [];
             revealBulletsCounter = 1;
 
             roundIndicator.forEach((icon) => {
