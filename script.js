@@ -33,70 +33,60 @@ addEventListener("DOMContentLoaded", (event) => {
     const characterImg = document.getElementById('characterImg');
     const gunRackDiv = document.getElementById('gunRack');
     const gunRackimg = document.getElementById('gunRackImg');
-    const bullet = document.getElementById('bullet');
     const tableTextBox = document.getElementById('tableTextBox');
     const tableText = document.getElementById('tableText');
     const tableTextBox2 = document.getElementById('tableTextBox2');
     let timeOutIds = [];
     let magazine = [];
-    let turn = true;
+    let turn = false;
     let ableToClickGun = false;
     let ableToShoot = false;
     let oppHealth = 2;
     let youHealth = 2;
-    let revealBulletsCounter = 1;
+    let revealBulletsCounter = 0;
     let blanksEjected = 0;
     let shotsFired = 0;
     let round = 1;
+    
+    const RandomintGenerator = function(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
 
     const ammoRatioCalculator = function() {
-        const RandomintGenerator = function(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        revealBulletsCounter++;
+        
+        if (revealBulletsCounter >= 4) {
+            return [4, 4];
         }
 
-        if (RandomintGenerator(2, 8) % 2 === 0) {
+        if (RandomintGenerator(1, 100) <= 60) { // 60% chance
             switch (revealBulletsCounter) {
                 case 1:
-                    revealBulletsCounter++
                     return [1, 1];
                 case 2:
-                    revealBulletsCounter++
                     return [2, 2];
                 case 3:
-                    revealBulletsCounter++
                     return [3, 3];
-                case 4:
-                    return [4, 4];
+            }
+        }
+
+        if (RandomintGenerator(1, 100) <= 50) { //50% chance
+            switch (revealBulletsCounter) {
+                case 1:
+                    return [1, 2];
+                case 2:
+                    return [2, 3];
+                case 3:
+                    return [3, 4];
             }
         } else {
-            if (RandomintGenerator(1, 2) === 1) {
-                switch (revealBulletsCounter) {
-                    case 1:
-                        revealBulletsCounter++
-                        return [1, 2];
-                    case 2:
-                        revealBulletsCounter++
-                        return [2, 3];
-                    case 3:
-                        revealBulletsCounter++
-                        return [3, 4];
-                    case 4:
-                        return [4, 4];
-                }
-            } else {
-                switch (revealBulletsCounter) {
-                    case 1:
-                        revealBulletsCounter++
-                        return [2, 1];
-                    case 2:
-                        revealBulletsCounter++
-                        return [3, 2];
-                    case 3:
-                        revealBulletsCounter++
-                        return [4, 3];
-                    case 4:
-                        return [4, 4];
-                }
+            switch (revealBulletsCounter) {
+                case 1:
+                    return [2, 1];
+                case 2:
+                    return [3, 2];
+                case 3:
+                    return [4, 3];
             }
         }
     }
@@ -120,7 +110,7 @@ addEventListener("DOMContentLoaded", (event) => {
         game2.style.left = '0%';
         character.style.transition = 'transform 2000ms ease-out';
         character.style.transform = 'scale(1) translate(0%, 0%)';
-        revealBulletsCounter = 1;
+        revealBulletsCounter = 0;
         oppHealth = 2;
         youHealth = 2;
         magazine = [];
@@ -131,7 +121,6 @@ addEventListener("DOMContentLoaded", (event) => {
         shotsFired = 0;
         round = 1;
         updateHealth();
-
 
         await delay(1000);
         table.style.transform = 'translateY(0%)';
@@ -145,7 +134,7 @@ addEventListener("DOMContentLoaded", (event) => {
             ableToShoot = false;
             shootBtnOpp.style.transform = 'translateY(-100%)';
             shootBtnYou.style.transform = 'translateY(100%)';
-            gunShootThem();
+            shootOpp();
         }
     })
 
@@ -154,7 +143,7 @@ addEventListener("DOMContentLoaded", (event) => {
             ableToShoot = false;
             shootBtnOpp.style.transform = 'translateY(-100%)';
             shootBtnYou.style.transform = 'translateY(100%)';
-            gunShootThemself();
+            shootSelfPlayer();
         }
     })
 
@@ -196,46 +185,51 @@ addEventListener("DOMContentLoaded", (event) => {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    const revealBullets = async function() {
-        let [blanks, live] = ammoRatioCalculator();
+    const shuffleBullets = function(blanks, live) {
         let TempMagazine = [];
-        let array = [];
-        const total = blanks + live;
+
+        for (i = blanks; i > 0; i--) {
+            TempMagazine.push(false);
+        }
+        for (i = live; i > 0; i--) {
+            TempMagazine.push(true);
+        }
+
+        let randomMagazineIndex = RandomintGenerator(0, TempMagazine.length - 1);
+        while (TempMagazine.length > 0) {
+            magazine.push(TempMagazine[randomMagazineIndex]);
+            TempMagazine.splice(randomMagazineIndex, 1);
+            randomMagazineIndex = RandomintGenerator(0, TempMagazine.length - 1);
+        }
+    }
+
+    const revealBulletsText = function(blanks, live) {
         let blankText = "blank";
         let liveText = "round";
-        if (blanks > 1) {blankText = "blanks"}
-        if (live > 1) {liveText = "rounds"}
 
-        bullets.forEach(index => {
-            index.innerHTML = '';
-        });
-
-        let randomInt = function(num) {
-        return Math.floor(Math.random() * num)
+        if (blanks > 1) {
+            blankText = "blanks";
+        };
+        if (live > 1) {
+            liveText = "rounds";
         };
 
         bulletRevealText.innerHTML = `
         ${blanks} ${blankText}, ${live} live ${liveText}`;
+    }
 
-        for (i = blanks; i > 0; i--) {
-            TempMagazine.push(false)
-        }
-        for (i = live; i > 0; i--) {
-            TempMagazine.push(true)
-        }
+    const DisplayBullets = function(blanks, live) {
+        let array = [];
+        const total = blanks + live;
 
-        let randomIndex2 = randomInt(TempMagazine.length);
-        while (TempMagazine.length > 0) {
-            magazine.push(TempMagazine[randomIndex2])
-            TempMagazine.splice(randomIndex2, 1)
-            randomIndex2 = randomInt(TempMagazine.length);
-        }
-
+        bullets.forEach(index => {
+            index.innerHTML = '';
+        });
         for(i = total; i > 0; i--) {
-            let randomIndex = randomInt(8);
+            let randomIndex = RandomintGenerator(0, 7);
 
             while (array.includes(randomIndex)) {
-                randomIndex = randomInt(8);
+                randomIndex = RandomintGenerator(0, 7);
             }
             array.push(randomIndex);
 
@@ -259,6 +253,13 @@ addEventListener("DOMContentLoaded", (event) => {
                 </div>`;
             };
         }
+    }
+
+    const revealBullets = async function() {
+        let [blanks, live] = ammoRatioCalculator();
+        revealBulletsText(blanks, live);
+        shuffleBullets(blanks, live);
+        DisplayBullets(blanks, live);
 
         revealTable.style.left = '0%';
         revealTableBlurBox.style.transform = 'translateX(0%)';
@@ -291,6 +292,7 @@ addEventListener("DOMContentLoaded", (event) => {
 
         await delay(750);
         handReveal.style.transform = 'translate(-50%, -50%) scale(120%) translateZ(0px)';
+        masterLoad();
 
         await delay(500);
         bulletTable.style.transform = "translateX(-100%)";
@@ -299,9 +301,8 @@ addEventListener("DOMContentLoaded", (event) => {
         revealTableBlurBox.style.backgroundColor = 'rgba(0, 0, 0, 0.0)';
         revealTableBlurBox.style.backdropFilter = 'blur(0px)';
         revealTable.style.left = '100%';
-        masterLoad();
 
-        await delay(7750);
+        await delay(6750);
         revealTableBlurBox.style.transform = 'translateX(100%)'
         turnCheck();
         handReveal.style.left = '0%';
@@ -310,7 +311,7 @@ addEventListener("DOMContentLoaded", (event) => {
         bullets.forEach((bullet) => {
             bullet.style.left = '100%';
             bullet.style.transform = `rotate(0deg)`;
-        })
+        });
     }
 
     const masterLoad = async function() {
@@ -438,173 +439,173 @@ addEventListener("DOMContentLoaded", (event) => {
         healthBoardContent[2].classList.add('translate-x-full');
         healthBoard.style.transform = 'translateX(0%)';
 
-
         await delay(2500);
         updateHealth();
 
         if (oppHealth > 0) {
             await delay(1000);
             healthBoard.style.transform = 'translateX(100%)';
-        } else {
-            magazine = [];
-            revealBulletsCounter = 1;
+            return;
+        }
+        
+        magazine = [];
+        revealBulletsCounter = 1;
+        roundIndicator.forEach((icon) => {
+            icon.querySelectorAll('img').forEach((img) => {
+                img.src = 'images/I.svg';
+            });
+        })
+        roundIndicator[2].querySelector('img').src = 'images/skull.svg';
 
-            roundIndicator.forEach((icon) => {
-                icon.querySelectorAll('img').forEach((img) => {
-                    img.src = 'images/I.svg';
-                });
-            })
-            roundIndicator[2].querySelector('img').src = 'images/skull.svg';
-            if (round === 1) {
-                round++;
-                const firstRoundIcon = roundIndicator[0].querySelector('img');
-                const secondRoundIcon = roundIndicator[1].querySelectorAll('img');
-                firstRoundIcon.src = 'images/IActive.svg';
+        if (round === 1) {
+            round++;
+            const firstRoundIcon = roundIndicator[0].querySelector('img');
+            const secondRoundIcon = roundIndicator[1].querySelectorAll('img');
+            firstRoundIcon.src = 'images/IActive.svg';
 
-                await delay(2000);
-                healthBoardContent[0].classList.add('translate-x-full');
-                healthBoardContent[1].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[0].classList.add('translate-x-full');
+            healthBoardContent[1].classList.remove('translate-x-full');
 
-                await delay(2000);
-                healthBoardContent[1].classList.add('translate-x-full');
-                healthBoardContent[2].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[1].classList.add('translate-x-full');
+            healthBoardContent[2].classList.remove('translate-x-full');
 
-                await delay(1000);
-                firstRoundIcon.src = 'images/I.svg';
-                
-                await delay(1000);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/IActive.svg';
-                });
+            await delay(1000);
+            firstRoundIcon.src = 'images/I.svg';
+            
+            await delay(1000);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/IActive.svg';
+            });
 
-                await delay(750);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/I.svg';
-                });
+            await delay(750);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/I.svg';
+            });
 
-                await delay(750);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/IActive.svg';
-                });
+            await delay(750);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/IActive.svg';
+            });
 
-                await delay(750);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/I.svg';
-                });
+            await delay(750);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/I.svg';
+            });
 
-                await delay(750);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/IActive.svg';
-                });
+            await delay(750);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/IActive.svg';
+            });
 
-                await delay(1000);
-                healthBoardContent[2].classList.add('translate-x-full');
-                healthBoardContent[0].classList.remove('translate-x-full');
+            await delay(1000);
+            healthBoardContent[2].classList.add('translate-x-full');
+            healthBoardContent[0].classList.remove('translate-x-full');
 
-                await delay(1000);
-                oppHealth = 4;
-                youHealth = 4;
-                updateHealth();
+            await delay(1000);
+            oppHealth = 4;
+            youHealth = 4;
+            updateHealth();
 
-                await delay(2000);
-                healthBoard.style.transform = 'translateX(100%)';
+            await delay(2000);
+            healthBoard.style.transform = 'translateX(100%)';
 
-                await delay(500);
-                character.style.transition = 'transform 2000ms ease-out';
-                character.style.transform = 'scale(1) translate(0%, 0%)';
+            await delay(500);
+            character.style.transition = 'transform 2000ms ease-out';
+            character.style.transform = 'scale(1) translate(0%, 0%)';
 
-                await delay(500);
-                table.style.transform = 'translateY(0%)';
-                gunPullIn();
+            await delay(500);
+            table.style.transform = 'translateY(0%)';
+            gunPullIn();
 
-                await delay(1000);
-                gunGrabReturn();
-                revealBullets();
+            await delay(1000);
+            gunGrabReturn();
+            revealBullets();
 
-            } else if (round === 2) {
-                round++;
-                const secondRoundIcon = roundIndicator[1].querySelectorAll('img');
-                const thirdRoundIcon = roundIndicator[2].querySelector('img');
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/IActive.svg';
-                });
+        } else if (round === 2) {
+            round++;
+            const secondRoundIcon = roundIndicator[1].querySelectorAll('img');
+            const thirdRoundIcon = roundIndicator[2].querySelector('img');
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/IActive.svg';
+            });
 
-                await delay(2000);
-                healthBoardContent[0].classList.add('translate-x-full');
-                healthBoardContent[1].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[0].classList.add('translate-x-full');
+            healthBoardContent[1].classList.remove('translate-x-full');
 
-                await delay(2000);
-                healthBoardContent[1].classList.add('translate-x-full');
-                healthBoardContent[2].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[1].classList.add('translate-x-full');
+            healthBoardContent[2].classList.remove('translate-x-full');
 
-                await delay(1000);
-                secondRoundIcon.forEach((img) => {
-                    img.src = 'images/I.svg'
-                });
+            await delay(1000);
+            secondRoundIcon.forEach((img) => {
+                img.src = 'images/I.svg'
+            });
 
-                await delay(1000);
-                thirdRoundIcon.src = 'images/skullActive.svg';
+            await delay(1000);
+            thirdRoundIcon.src = 'images/skullActive.svg';
 
-                await delay(750);
-                thirdRoundIcon.src = 'images/skull.svg';
+            await delay(750);
+            thirdRoundIcon.src = 'images/skull.svg';
 
-                await delay(750);
-                thirdRoundIcon.src = 'images/skullActive.svg';
+            await delay(750);
+            thirdRoundIcon.src = 'images/skullActive.svg';
 
-                await delay(750);
-                thirdRoundIcon.src = 'images/skull.svg';
+            await delay(750);
+            thirdRoundIcon.src = 'images/skull.svg';
 
-                await delay(750);
-                thirdRoundIcon.src = 'images/skullActive.svg';
+            await delay(750);
+            thirdRoundIcon.src = 'images/skullActive.svg';
 
-                await delay(1000);
-                healthBoardContent[2].classList.add('translate-x-full');
-                healthBoardContent[0].classList.remove('translate-x-full');
+            await delay(1000);
+            healthBoardContent[2].classList.add('translate-x-full');
+            healthBoardContent[0].classList.remove('translate-x-full');
 
-                await delay(1000);
-                oppHealth = 6;
-                youHealth = 6;
-                updateHealth();
-                
-                await delay(2000);
-                healthBoard.style.transform = 'translateX(100%)';
+            await delay(1000);
+            oppHealth = 6;
+            youHealth = 6;
+            updateHealth();
+            
+            await delay(2000);
+            healthBoard.style.transform = 'translateX(100%)';
 
-                await delay(500);
-                character.style.transition = 'transform 2000ms ease-out';
-                character.style.transform = 'scale(1) translate(0%, 0%)';
+            await delay(500);
+            character.style.transition = 'transform 2000ms ease-out';
+            character.style.transform = 'scale(1) translate(0%, 0%)';
 
-                await delay(500);
-                table.style.transform = 'translateY(0%)';
-                gunPullIn();
+            await delay(500);
+            table.style.transform = 'translateY(0%)';
+            gunPullIn();
 
-                await delay(1000);
-                gunGrabReturn();
-                revealBullets();
-            } else if (round === 3) {
-                const thirdRoundIcon = roundIndicator[2].querySelector('img');
-                thirdRoundIcon.src = 'images/skullActive.svg';
+            await delay(1000);
+            gunGrabReturn();
+            revealBullets();
+        } else if (round === 3) {
+            const thirdRoundIcon = roundIndicator[2].querySelector('img');
+            thirdRoundIcon.src = 'images/skullActive.svg';
 
-                await delay(2000);
-                healthBoardContent[0].classList.add('translate-x-full');
-                healthBoardContent[1].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[0].classList.add('translate-x-full');
+            healthBoardContent[1].classList.remove('translate-x-full');
 
-                await delay(2000);
-                healthBoardContent[1].classList.add('translate-x-full');
-                healthBoardContent[2].classList.remove('translate-x-full');
+            await delay(2000);
+            healthBoardContent[1].classList.add('translate-x-full');
+            healthBoardContent[2].classList.remove('translate-x-full');
 
-                await delay(1000);
-                thirdRoundIcon.src = 'images/skull.svg';
+            await delay(1000);
+            thirdRoundIcon.src = 'images/skull.svg';
 
-                await delay(1000);
-                healthBoard.style.transform = 'translateX(100%)';
+            await delay(1000);
+            healthBoard.style.transform = 'translateX(100%)';
 
-                await delay(5000);
-                game2.style.left = '100%';
-                gunPullIn();
+            await delay(5000);
+            game2.style.left = '100%';
+            gunPullIn();
 
-                await delay(1000);
-                gunGrabReturn();
-            }
+            await delay(1000);
+            gunGrabReturn();
         }
     }
 
@@ -623,146 +624,101 @@ addEventListener("DOMContentLoaded", (event) => {
         document.getElementById('oppHealthDisplay').innerHTML = healthFunction(oppHealth);
     }
 
-    const opponentDefeat = function() {
+    const shootOpp = async function() { //You shoots Opp
+        await delay(1000);
+        gunPointEnemy.style.top = '50%'; 
+        gunPointEnemy.style.transform = 'translate(-50%, -50%)';
 
-    }
-    
-    const gunShootThem = async function() {
-        if (turn) {
-            await delay(1000)
-            gunPointEnemy.style.top = '50%'; 
-            gunPointEnemy.style.transform = 'translate(-50%, -50%)';
+        if (magazine[0] === true) {
+            await delay(3000);
+            displayGunFire(true, '43%', '2', '20rem', '62.5%');
+            oppHealth--;
+            ejectBullet();
+            characterDown();
 
-            if (magazine[0] === true) {
-                await delay(3000)
-                displayGunFire(true, '43%', '2', '20rem', '62.5%');
-                oppHealth--;
-                ejectBullet();
-                characterDown();
+            await delay(100);
+            displayGunFire(false);
 
-                await delay(100)
-                displayGunFire(false);
+            await delay(1400);
+            gunPointEnemy.style.top = '100%';
+            gunPointEnemy.style.transform = 'translate(-50%, 0%)';
 
-                await delay(1400)
-                gunPointEnemy.style.top = '100%';
-                gunPointEnemy.style.transform = 'translate(-50%, 0%)';
+            if (oppHealth <= 0) {
+                await delay(2000);
+                checkHealth();
 
-                if (oppHealth <= 0) {
-                    await delay(2000);
-                    checkHealth();
-                } else {
-                    await delay(5000);
-                    checkHealth();
+            } else {
+                await delay(5000);
+                checkHealth();
 
-                    await delay(4500);
-                    gunPullIn()
-    
-                    await delay(1000)
-                    gunGrabReturn()
-                    turn = false;
-    
-                    if (magazine.length > 0) {
-                        await delay(2900)
-                        turnCheck()
-                    } else {
-                        await delay(1500); 
-                        revealBullets()
-                    }
-                }
-            } else if (magazine[0] === false) { //if first bullet in magazine is a blank round
-                await delay(3000) //lowers gun below the screen
-                gunPointEnemy.style.top = '100%';
-                gunPointEnemy.style.transform = 'translate(-50%, 0%)';
-
-                await delay(500)
-                gunPullIn(); //gun is seen sliding from below the screen
-
-                await delay(2500)
-                gunRack(); //the player racks the gun
-
-                await delay(500)
-                gunGrabReturn() //player places the gun to the center of the table
-                turn = false;
-
-                if (magazine.length > 0) { //checks if the magazine is empty
-                    await delay(2500)
-                    turnCheck() //if magazine has bullets the game continues
-                } else {
-                    await delay(1500)
-                    revealBullets()  //if not bullets are added to the magazine
-                }
-            }
-        } else if (!turn) {
-            await delay(1000)
-            gunPointYou.style.top = '-5%';
-            gunPointYou.style.transform = 'translate(-50%, -100%)';
-            await delay(1000)
-            gunPointYou.style.zIndex = '3';
-            blurBox.style.opacity = '1';
-
-            if (magazine[0] === true) {
-                await delay(3000);
-                youHealth--;
-                displayGunFire(true, '43%', '4', '22rem', '27%');
-                ejectBullet();
-
-                await delay(100);
-                displayGunFire(false);
-                blackout.style.transform = 'translateY(0%)';
-                gunPointYou.style.top = '0%';
-                gunPointYou.style.transform = 'translate(-50%, 0%)';
-                blurBox.style.opacity = '0';
-                gunPointYou.style.zIndex = '0';
-
-                if (youHealth > 0) {
-                    await delay(1900);
-                    blackout.style.opacity = '0';
-    
-                    await delay(1500);
-                    checkHealth();
-
-                    await delay(4500);
-                    gunPullIn();
-    
-                    await delay(1000);
-                    gunGrabReturn();
-                    blackout.style.transform = 'translateY(100%)';
-                    blackout.style.opacity = '1';
-                    turn = true;
-    
-                    if (magazine.length > 0) {
-                        await delay(2500)
-                        turnCheck();
-                    } else {
-                        await delay(1500)
-                        revealBullets()
-                    }
-                } else {
-                    game2.style.left = "100%";
-                    gunPullIn();
-
-                    await delay(2000)
-                    blackout.style.opacity = '0';
-                    gunGrabReturn();
-
-                    await delay(3000)
-                    blackout.style.transform = 'translateY(100%)';
-                }
-            } else if (magazine[0] === false) {
-                await delay(3000)
-                gunPointYou.style.top = '0%';
-                gunPointYou.style.transform = 'translate(-50%, 0%)';
-                blurBox.style.opacity = '0';
-                gunPointYou.style.zIndex = '0';
-
-                await delay(1500);
+                await delay(4500);
                 gunPullIn();
-
-                await delay(2500);
-                gunRack();
 
                 await delay(1000);
                 gunGrabReturn();
+                turn = false;
+            }
+        } else if (magazine[0] === false) {
+            await delay(3000);
+            gunPointEnemy.style.top = '100%';
+            gunPointEnemy.style.transform = 'translate(-50%, 0%)';
+
+            await delay(500);
+            gunPullIn();
+
+            await delay(2500);
+            gunRack();
+
+            await delay(500);
+            gunGrabReturn();
+            turn = false;
+        }
+
+        if (magazine.length > 0) {
+            await delay(2500);
+            turnCheck();
+        } else {
+            await delay(1500);
+            revealBullets();
+        }
+    }
+
+    const shootPlayer = async function() { //Opp shoots You
+        await delay(1000);
+        gunPointYou.style.top = '-5%';
+        gunPointYou.style.transform = 'translate(-50%, -100%)';
+        await delay(1000);
+        gunPointYou.style.zIndex = '3';
+        blurBox.style.opacity = '1';
+
+        if (magazine[0] === true) {
+            await delay(3000);
+            youHealth--;
+            displayGunFire(true, '43%', '4', '22rem', '27%');
+            ejectBullet();
+
+            await delay(100);
+            displayGunFire(false);
+            blackout.style.transform = 'translateY(0%)';
+            gunPointYou.style.top = '0%';
+            gunPointYou.style.transform = 'translate(-50%, 0%)';
+            blurBox.style.opacity = '0';
+            gunPointYou.style.zIndex = '0';
+
+            if (youHealth > 0) {
+                await delay(1900);
+                blackout.style.opacity = '0';
+
+                await delay(1500);
+                checkHealth();
+
+                await delay(4500);
+                gunPullIn();
+
+                await delay(1000);
+                gunGrabReturn();
+                blackout.style.transform = 'translateY(100%)';
+                blackout.style.opacity = '1';
                 turn = true;
 
                 if (magazine.length > 0) {
@@ -770,154 +726,476 @@ addEventListener("DOMContentLoaded", (event) => {
                     turnCheck();
                 } else {
                     await delay(1500);
-                    revealBullets()
+                    revealBullets();
                 }
-            }
-        }
-    }
-
-    const gunShootThemself = async function() {
-        if (turn) {
-            await delay(1000)
-            gunPointItselfYou.style.top = '30%';
-            gunPointItselfYou.style.transform = 'translate(-50%, -50%)';
-            blurBox.style.opacity = '1';
-
-            await delay(3000)
-            if (magazine[0] === true) {
-                displayGunFire(true, '55%', '20', '40rem', '50%');
-                ejectBullet();
-                youHealth--;
-
-                await delay(100)
-                blackout.style.transform = 'translateY(0%)';
-                displayGunFire(false);
-                gunPointItselfYou.style.top = '100%';
-                gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
-                blurBox.style.opacity = '0';
-
-                if (youHealth > 0) {
-                    await delay(1900);
-                    blackout.style.opacity = '0';
-
-                    await delay(1500)
-                    checkHealth();
-
-                    await delay(4500);
-                    gunPullIn();
-
-                    await delay(1000);
-                    gunGrabReturn();
-                    turn = false;
-                    blackout.style.transform = 'translateY(100%)';
-                    blackout.style.opacity = '1';
-
-                    if (magazine.length > 0) {
-                        await delay(2900);
-                        turnCheck();
-                    } else {
-                        await delay(2900)
-                        revealBullets();
-                    }
-                } else {
-                    game2.style.left = "100%";
-                    gunPullIn();
-
-                    await delay(2000)
-                    blackout.style.opacity = '0';
-                    gunGrabReturn();
-
-                    await delay(3000)
-                    blackout.style.transform = 'translateY(100%)';
-                }
-            } else if (magazine[0] === false) {
-                gunPointItselfYou.style.top = '100%';
-                gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
-                blurBox.style.opacity = '0';
-
-                await delay(1000)
+            } else {
+                game2.style.left = "100%";
                 gunPullIn();
 
                 await delay(2000)
-                gunRack();
+                blackout.style.opacity = '0';
+                gunGrabReturn();
 
-                if (magazine.length > 0) {
-                        ableToClickGun = true;
-                } else {
-                    gunGrabReturn();
-
-                    await delay(1000)
-                    revealBullets()
-                }
-            }
-        } else if (!turn) {
-            await delay(1000);
-            gunPointItselfEnemy.style.top = '-35%';
-            gunPointItselfEnemy.style.transform = 'translate(-50%, -100%)';
-
-            if (magazine[0] === true) {
                 await delay(3000);
-                displayGunFire(true, '34%', '1', '14rem', '39%');
-                ejectBullet();
-                oppHealth--;
-                characterDown();
-                gunPointItselfEnemy.style.top = '0%';
-                gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+                blackout.style.transform = 'translateY(100%)';
+            }
+        } else if (magazine[0] === false) {
+            await delay(3000);
+            gunPointYou.style.top = '0%';
+            gunPointYou.style.transform = 'translate(-50%, 0%)';
+            blurBox.style.opacity = '0';
+            gunPointYou.style.zIndex = '0';
 
-                if (oppHealth <= 0) {
-                    await delay(100);
-                    displayGunFire(false)
+            await delay(1500);
+            gunPullIn();
 
-                    await delay(2900);
-                    checkHealth();
-                } else {
-                    await delay(100);
-                    displayGunFire(false)
-    
-                    await delay(6900);//big time gap between is because of characterDown() animation
-                    checkHealth();
-    
-                    await delay(4500);
-                    gunPullIn();
-    
-                    await delay(1000);
-                    gunGrabReturn();
-                    turn = true;
-                    
-                    if (oppHealth <= 0) {
-                        return;
-                    };
-    
-                    if (magazine.length > 0) {
-                        await delay(2800);
-                        turnCheck();
-                    } else {
-                        await delay(1500);
-                        revealBullets();
-                    }
-                }
-            } else if (magazine[0] === false) {
-                await delay(3500);
-                gunPointItselfEnemy.style.top = '0%';
-                gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+            await delay(2500);
+            gunRack();
 
-                await delay(1000);
-                gunPullIn();
+            await delay(1000);
+            gunGrabReturn();
+            turn = true;
 
+            if (magazine.length > 0) {
                 await delay(2500);
-                gunRack();
-                if (magazine.length > 0) {
-                        turnCheck();
-                } else {
-                    await delay(1500);
-                    gunGrabReturn();
-
-                    await delay(3000)
-                    revealBullets();
-                }
+                turnCheck();
+            } else {
+                await delay(1500);
+                revealBullets();
             }
         }
     }
+
+    const shootSelfPlayer = async function() { //You shoots You
+        await delay(1000)
+        gunPointItselfYou.style.top = '30%';
+        gunPointItselfYou.style.transform = 'translate(-50%, -50%)';
+        blurBox.style.opacity = '1';
+
+        await delay(3000)
+        if (magazine[0] === true) {
+            displayGunFire(true, '55%', '20', '40rem', '50%');
+            ejectBullet();
+            youHealth--;
+
+            await delay(100)
+            blackout.style.transform = 'translateY(0%)';
+            displayGunFire(false);
+            gunPointItselfYou.style.top = '100%';
+            gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
+            blurBox.style.opacity = '0';
+
+            if (youHealth > 0) {
+                await delay(1900);
+                blackout.style.opacity = '0';
+
+                await delay(1500)
+                checkHealth();
+
+                await delay(4500);
+                gunPullIn();
+
+                await delay(1000);
+                gunGrabReturn();
+                turn = false;
+                blackout.style.transform = 'translateY(100%)';
+                blackout.style.opacity = '1';
+
+                if (magazine.length > 0) {
+                    await delay(2900);
+                    turnCheck();
+                } else {
+                    await delay(2900)
+                    revealBullets();
+                }
+            } else {
+                game2.style.left = "100%";
+                gunPullIn();
+
+                await delay(2000)
+                blackout.style.opacity = '0';
+                gunGrabReturn();
+
+                await delay(3000)
+                blackout.style.transform = 'translateY(100%)';
+            }
+        } else if (magazine[0] === false) {
+            gunPointItselfYou.style.top = '100%';
+            gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
+            blurBox.style.opacity = '0';
+
+            await delay(1000)
+            gunPullIn();
+
+            await delay(2000)
+            gunRack();
+
+            if (magazine.length > 0) {
+                    ableToClickGun = true;
+            } else {
+                gunGrabReturn();
+
+                await delay(1000)
+                revealBullets()
+            }
+        }
+    }
+
+    const shootSelfOpp = async function() { //Opp shoots Opp
+        await delay(1000);
+        gunPointItselfEnemy.style.top = '-35%';
+        gunPointItselfEnemy.style.transform = 'translate(-50%, -100%)';
+
+        if (magazine[0] === true) {
+            await delay(3000);
+            displayGunFire(true, '34%', '1', '14rem', '39%');
+            ejectBullet();
+            oppHealth--;
+            characterDown();
+            gunPointItselfEnemy.style.top = '0%';
+            gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+
+            await delay(100);
+            displayGunFire(false);
+
+            if (oppHealth <= 0) {
+                await delay(3000);
+                checkHealth();
+
+            } else {
+                await delay(6900);
+                checkHealth();
+
+                await delay(4500);
+                gunPullIn();
+
+                await delay(1000);
+                gunGrabReturn();
+                turn = true;
+                
+                if (oppHealth <= 0) {
+                    return;
+                };
+
+                if (magazine.length > 0) {
+                    await delay(2800);
+                    turnCheck();
+                } else {
+                    await delay(1500);
+                    revealBullets();
+                }
+            }
+        } else if (magazine[0] === false) {
+            await delay(3500);
+            gunPointItselfEnemy.style.top = '0%';
+            gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+
+            await delay(1000);
+            gunPullIn();
+
+            await delay(2500);
+            gunRack();
+            if (magazine.length > 0) {
+                    turnCheck();
+            } else {
+                await delay(1500);
+                gunGrabReturn();
+
+                await delay(3000);
+                revealBullets();
+            }
+        }
+    }
+
+    // const gunShootThem = async function() {
+    //     if (turn) {
+    //         await delay(1000);
+    //         gunPointEnemy.style.top = '50%'; 
+    //         gunPointEnemy.style.transform = 'translate(-50%, -50%)';
+
+    //         if (magazine[0] === true) {
+    //             await delay(3000);
+    //             displayGunFire(true, '43%', '2', '20rem', '62.5%');
+    //             oppHealth--;
+    //             ejectBullet();
+    //             characterDown();
+
+    //             await delay(100);
+    //             displayGunFire(false);
+
+    //             await delay(1400);
+    //             gunPointEnemy.style.top = '100%';
+    //             gunPointEnemy.style.transform = 'translate(-50%, 0%)';
+
+    //             if (oppHealth <= 0) {
+    //                 await delay(2000);
+    //                 checkHealth();
+    //             } else {
+    //                 await delay(5000);
+    //                 checkHealth();
+
+    //                 await delay(4500);
+    //                 gunPullIn();
+    
+    //                 await delay(1000);
+    //                 gunGrabReturn();
+    //                 turn = false;
+    
+    //                 if (magazine.length > 0) {
+    //                     await delay(2900)
+    //                     turnCheck();
+    //                 } else {
+    //                     await delay(1500); 
+    //                     revealBullets();
+    //                 }
+    //             }
+    //         } else if (magazine[0] === false) {
+    //             await delay(3000);
+    //             gunPointEnemy.style.top = '100%';
+    //             gunPointEnemy.style.transform = 'translate(-50%, 0%)';
+
+    //             await delay(500);
+    //             gunPullIn();
+
+    //             await delay(2500);
+    //             gunRack();
+
+    //             await delay(500);
+    //             gunGrabReturn();
+    //             turn = false;
+
+    //             if (magazine.length > 0) {
+    //                 await delay(2500);
+    //                 turnCheck();
+    //             } else {
+    //                 await delay(1500);
+    //                 revealBullets();
+    //             }
+    //         }
+    //     } else if (!turn) {
+    //         await delay(1000);
+    //         gunPointYou.style.top = '-5%';
+    //         gunPointYou.style.transform = 'translate(-50%, -100%)';
+    //         await delay(1000);
+    //         gunPointYou.style.zIndex = '3';
+    //         blurBox.style.opacity = '1';
+
+    //         if (magazine[0] === true) {
+    //             await delay(3000);
+    //             youHealth--;
+    //             displayGunFire(true, '43%', '4', '22rem', '27%');
+    //             ejectBullet();
+
+    //             await delay(100);
+    //             displayGunFire(false);
+    //             blackout.style.transform = 'translateY(0%)';
+    //             gunPointYou.style.top = '0%';
+    //             gunPointYou.style.transform = 'translate(-50%, 0%)';
+    //             blurBox.style.opacity = '0';
+    //             gunPointYou.style.zIndex = '0';
+
+    //             if (youHealth > 0) {
+    //                 await delay(1900);
+    //                 blackout.style.opacity = '0';
+    
+    //                 await delay(1500);
+    //                 checkHealth();
+
+    //                 await delay(4500);
+    //                 gunPullIn();
+    
+    //                 await delay(1000);
+    //                 gunGrabReturn();
+    //                 blackout.style.transform = 'translateY(100%)';
+    //                 blackout.style.opacity = '1';
+    //                 turn = true;
+    
+    //                 if (magazine.length > 0) {
+    //                     await delay(2500);
+    //                     turnCheck();
+    //                 } else {
+    //                     await delay(1500);
+    //                     revealBullets();
+    //                 }
+    //             } else {
+    //                 game2.style.left = "100%";
+    //                 gunPullIn();
+
+    //                 await delay(2000)
+    //                 blackout.style.opacity = '0';
+    //                 gunGrabReturn();
+
+    //                 await delay(3000);
+    //                 blackout.style.transform = 'translateY(100%)';
+    //             }
+    //         } else if (magazine[0] === false) {
+    //             await delay(3000);
+    //             gunPointYou.style.top = '0%';
+    //             gunPointYou.style.transform = 'translate(-50%, 0%)';
+    //             blurBox.style.opacity = '0';
+    //             gunPointYou.style.zIndex = '0';
+
+    //             await delay(1500);
+    //             gunPullIn();
+
+    //             await delay(2500);
+    //             gunRack();
+
+    //             await delay(1000);
+    //             gunGrabReturn();
+    //             turn = true;
+
+    //             if (magazine.length > 0) {
+    //                 await delay(2500);
+    //                 turnCheck();
+    //             } else {
+    //                 await delay(1500);
+    //                 revealBullets();
+    //             }
+    //         }
+    //     }
+    // }
+
+    // const gunShootThemself = async function() {
+    //     if (turn) {
+    //         await delay(1000)
+    //         gunPointItselfYou.style.top = '30%';
+    //         gunPointItselfYou.style.transform = 'translate(-50%, -50%)';
+    //         blurBox.style.opacity = '1';
+
+    //         await delay(3000)
+    //         if (magazine[0] === true) {
+    //             displayGunFire(true, '55%', '20', '40rem', '50%');
+    //             ejectBullet();
+    //             youHealth--;
+
+    //             await delay(100)
+    //             blackout.style.transform = 'translateY(0%)';
+    //             displayGunFire(false);
+    //             gunPointItselfYou.style.top = '100%';
+    //             gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
+    //             blurBox.style.opacity = '0';
+
+    //             if (youHealth > 0) {
+    //                 await delay(1900);
+    //                 blackout.style.opacity = '0';
+
+    //                 await delay(1500)
+    //                 checkHealth();
+
+    //                 await delay(4500);
+    //                 gunPullIn();
+
+    //                 await delay(1000);
+    //                 gunGrabReturn();
+    //                 turn = false;
+    //                 blackout.style.transform = 'translateY(100%)';
+    //                 blackout.style.opacity = '1';
+
+    //                 if (magazine.length > 0) {
+    //                     await delay(2900);
+    //                     turnCheck();
+    //                 } else {
+    //                     await delay(2900)
+    //                     revealBullets();
+    //                 }
+    //             } else {
+    //                 game2.style.left = "100%";
+    //                 gunPullIn();
+
+    //                 await delay(2000)
+    //                 blackout.style.opacity = '0';
+    //                 gunGrabReturn();
+
+    //                 await delay(3000)
+    //                 blackout.style.transform = 'translateY(100%)';
+    //             }
+    //         } else if (magazine[0] === false) {
+    //             gunPointItselfYou.style.top = '100%';
+    //             gunPointItselfYou.style.transform = 'translate(-50%, 0%)';
+    //             blurBox.style.opacity = '0';
+
+    //             await delay(1000)
+    //             gunPullIn();
+
+    //             await delay(2000)
+    //             gunRack();
+
+    //             if (magazine.length > 0) {
+    //                     ableToClickGun = true;
+    //             } else {
+    //                 gunGrabReturn();
+
+    //                 await delay(1000)
+    //                 revealBullets()
+    //             }
+    //         }
+    //     } else if (!turn) {
+    //         await delay(1000);
+    //         gunPointItselfEnemy.style.top = '-35%';
+    //         gunPointItselfEnemy.style.transform = 'translate(-50%, -100%)';
+
+    //         if (magazine[0] === true) {
+    //             await delay(3000);
+    //             displayGunFire(true, '34%', '1', '14rem', '39%');
+    //             ejectBullet();
+    //             oppHealth--;
+    //             characterDown();
+    //             gunPointItselfEnemy.style.top = '0%';
+    //             gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+
+    //             await delay(100);
+    //             displayGunFire(false);
+
+    //             if (oppHealth <= 0) {
+    //                 await delay(3000);
+    //                 checkHealth();
+
+    //             } else {
+    //                 await delay(6900);
+    //                 checkHealth();
+    
+    //                 await delay(4500);
+    //                 gunPullIn();
+    
+    //                 await delay(1000);
+    //                 gunGrabReturn();
+    //                 turn = true;
+                    
+    //                 if (oppHealth <= 0) {
+    //                     return;
+    //                 };
+    
+    //                 if (magazine.length > 0) {
+    //                     await delay(2800);
+    //                     turnCheck();
+    //                 } else {
+    //                     await delay(1500);
+    //                     revealBullets();
+    //                 }
+    //             }
+    //         } else if (magazine[0] === false) {
+    //             await delay(3500);
+    //             gunPointItselfEnemy.style.top = '0%';
+    //             gunPointItselfEnemy.style.transform = 'translate(-50%, 0%)';
+
+    //             await delay(1000);
+    //             gunPullIn();
+
+    //             await delay(2500);
+    //             gunRack();
+    //             if (magazine.length > 0) {
+    //                     turnCheck();
+    //             } else {
+    //                 await delay(1500);
+    //                 gunGrabReturn();
+
+    //                 await delay(3000);
+    //                 revealBullets();
+    //             }
+    //         }
+    //     }
+    // }
 
     const gunPullOut = async function() {
         if (turn) {
@@ -943,17 +1221,19 @@ addEventListener("DOMContentLoaded", (event) => {
     }
     const turnCheck = async function() {
         gunGrab();
-        if (!turn) {
-            await delay(3250)
-            gunPullOut();
+        if (turn) {
+            return;
+        }
 
-            await delay(750)
-            let randomInt = Math.floor(Math.random() * 2);
-            if (randomInt === 1) {
-                gunShootThemself();
-            } else {
-                gunShootThem();
-            }
+        await delay(3250);
+        gunPullOut();
+
+        await delay(750)
+        let randomInt = Math.floor(Math.random() * 2);
+        if (randomInt === 1) {
+            shootSelfOpp();
+        } else {
+            shootPlayer();
         }
     }
     const displayGunFire = function(bool, top = '0px', index = '1', width = '100px', left = '0') {
@@ -994,6 +1274,7 @@ addEventListener("DOMContentLoaded", (event) => {
         }
     }
 
+    const bullet = document.getElementById('bullet');
     const ejectBullet = function() {
         clearTimeouts();
         magazine.shift();
@@ -1008,7 +1289,7 @@ addEventListener("DOMContentLoaded", (event) => {
                 bullet.style.transform = 'translate(50%, 50%) rotate(-12deg)';
                 bullet.style.left = '60%';
                 bullet.style.top = '65%';
-            }, 1))
+            }, 5))
         } else {
             bullet.style.display = 'block';
             bullet.style.zIndex = '100';
@@ -1020,7 +1301,7 @@ addEventListener("DOMContentLoaded", (event) => {
                 bullet.style.transform = 'translate(50%, 50%) rotate(-12deg)';
                 bullet.style.left = '35%';
                 bullet.style.top = '25%';
-            }, 1))
+            }, 5))
         }
         timeOutIds.push(setTimeout(() => {
             bullet.style.zIndex = '0';
@@ -1051,4 +1332,5 @@ addEventListener("DOMContentLoaded", (event) => {
             character.style.transform = 'scale(1) translate(0%, 0%)';
         }
     }
+
 });
